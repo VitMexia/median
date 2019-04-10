@@ -1,21 +1,19 @@
-
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
+public class median2 {
 
-public class median {
 
 
     public static float median;
-
-    public static ArrayList<Integer> myIntList = new ArrayList<Integer>();
+    public static int myIntList[] = new int[1];
+    public static int insertedIntCount = 0;
 
 
     public static void main(String[] args){
 
 
-//        myIntList.add(6506);
+//        myIntList[0] = 6506;
+//        insertedIntCount++;
 //        updateSet(9241);
 //        updateSet(2567);
 //        updateSet(5928);
@@ -56,9 +54,12 @@ public class median {
             else if(command.equals("updateSet") && sc.hasNextInt()){
 
                 updateSet(sc.nextInt());
+                insertedIntCount++;
+
             }
             else if(command.equals("getMedian")){
-                if(myIntList.size() == 0)
+
+                if(insertedIntCount == 0)
                     System.out.println("No Values available! Please add some and try again!");
                 else
                     System.out.println("Median: " + median);
@@ -79,38 +80,69 @@ public class median {
         sc.close();
     }
 
+    private static void increaseMyArraySize() {
+
+        int tempArray[] = new int[myIntList.length*2];
+        System.arraycopy(myIntList,0,tempArray,0,insertedIntCount);
+        myIntList = tempArray;
+
+    }
+
+    private static void insertIntAt(int index, int newIntToInsert){
+
+        int tempArray[] = new int[myIntList.length];
+
+
+        if(index>0)
+            System.arraycopy(myIntList,0,tempArray,0,index);
+
+        System.arraycopy(myIntList,index,tempArray,index+1,insertedIntCount-index);
+        tempArray[index] = newIntToInsert;
+        myIntList = tempArray;
+
+    }
 
     private static void updateSet(int newInt){
 
-        if(myIntList.size()==0){
-            myIntList.add(newInt);
+        if(insertedIntCount == myIntList.length)
+                    increaseMyArraySize();
+
+        if(insertedIntCount == 0){
+            myIntList[0] =newInt;
             median = newInt;
             return;
         }
 
-            addSorted(0, myIntList.size()-1, newInt);
+
+        else {
+            addSorted(0, insertedIntCount-1, newInt);
+        }
+
     }
 
 
     private static void addSorted(int l, int r, int newInt){
 
-        if(myIntList.get(r) <= newInt){
-            myIntList.add(newInt);
+        if(myIntList[r] <= newInt) {
+            myIntList[r+1] = newInt;
             return;
         }
-        if(myIntList.get(l) >= newInt){
-            myIntList.add(l,newInt);
+        if(myIntList[l] >= newInt) {
+            insertIntAt(l, newInt);
             return;
         }
 
+
+
         if(r-l == 1){
-            myIntList.add(r,newInt);
+            insertIntAt(r, newInt);
             return;
         }
 
         int mid = l +(r-l)/2;
 
-        if(myIntList.get(mid)> newInt)
+
+        if(myIntList[mid] > newInt)
             addSorted(l,mid,newInt);
         else
             addSorted(mid,r,newInt);
@@ -118,28 +150,22 @@ public class median {
 
     private static void updateMedian(){
 
-        if(myIntList.size()%2 == 0){
+        if(insertedIntCount%2 == 0){
 
-            int tmp = myIntList.size()/2;
+            int tmp = insertedIntCount/2;
             int tmp2 = tmp-1;
 
-            median = (myIntList.get(tmp2)+ myIntList.get(tmp))/2;
+            median = (myIntList[tmp2] + myIntList[tmp])/2;
         }
         else {
-            median = myIntList.get(myIntList.size()/2);
-
+            median = myIntList[insertedIntCount/2];
         }
     }
 
     private static void listList(){
 
-        for(int i = 0; i < myIntList.size();i++){
-            System.out.println(myIntList.get(i));
+        for(int i = 0; i < insertedIntCount;i++){
+            System.out.println(myIntList[i]);
         }
     }
-
-
-
 }
-
-
